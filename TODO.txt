@@ -1,0 +1,129 @@
+﻿Current
+
+Reopened
+
+Open Features
+- Currently resize moves the window to 0,0; might like an option for that
+- Option to get expected window caption from existing window
+- Ctrl+C while editing a program entry doesn't copy the text
+- Hotkeys in options should be sortable
+- Find some was to "undo" a tree sort
+- Get program icon from program executable
+- Drag and drop to organize tab pages
+- Help for putty/etc. dialog windows
+- Hover-highlight for X button
+- Some mechanism for docking windows inside the tabpage
+- Dialog to change tag info on open tabs (virtual desktop size-fixed or expandable, "keep maximized" etc.)
+- Way to prevent new windows from appearing on the desktop before being PZ'd
+- Subrip's windows are being positioned based on screen coordinates instead of client coordinates
+- Keep track of captured HWNDs in a crash recovery file so that the windows can be reclaimed or released (so far just terminating zombies)
+- Autohide feels lame; for example, clicking a tab's X to close it doesn't close it if the tab selection makes the program list autohide away
+- More command line options:  Open multiple programs, open in tab named "blah", full screen mode
+
+Performace
+- Would be nice if WriteArray didn't need to be unsafe
+- Look into using WM_HOTKEY or similar instead of keyboard hook
+- Some way to expand the shared memory size if necessary
+- Closing the main window of a process doesn't remove the captured PID until the next cleanup (PID is still active during original cleanup)
+
+Open Bugs
+- Releasing a window makes it blink as it is repositioned to the cursor location
+- Have to click twice to open a menu when working in a PZ'd window (sometimes?)
+- Selecting a program with the keyboard and bSelectActivates removes keyboard focus from the program list
+- Autohide isn't always resizing the PZ'd window on a new program launch
+? Sometimes PZ can't find the notepad window even though it's obviously been created
+- Close-box on a tab is located via magic number instead of system call
+- Undo doesn't make sense for things like "program options" or "program properties" if you canceled out of the dialog
+- May want to call "ensure visible" when selecting a tab
+- Can't resize windows past the panel size
+- Restoring a "keep maximized" window is not forcing maximize
+- Wait cursor appears for several seconds after PZ startup
+- A new child window that appears centered in the desktop should probably be centered in the PZ window
+- Capturing CMD.exe doesn't work
+- The first Ctrl+PgUp hotkey from the second tab doesn't focus the first window properly
+- A shortcut like Freecell makes a command line of "%ProgramFiles%\..." which doesn't work on 32-bit PZ to launch the 64-bit program
+- Drag and drop in freecell doesn't work when PZ'd (but it does work with explorer)
+- Can't drag BSPlayer into PZ
+- Drag/Drop tabs only seems to work half the time; needs visual indicator of where tab will be
+
+Suggestions from JBH
+- a sweet "advanced" dialog that let you define stdio and stdout executables
+- PZ'd window flashing should flash the minimized PZ window/nonselected tab
+
+Recurring:
+
+- Don't forget to check for undoable actions that aren't implemented
+  - Tree sort
+- Check tab order
+- Good error messages for:
+  - Missing DLLs
+- Make sure "terminate all" actually terminates things (especially windows grabbed via caption)
+- Make sure 32 and 64 bit both work
+- Check paths with spaces and whatnot
+
+Fixed
+X Release all not implemented
+X Terminate all not implemented
+X Option to show/hide title bar for windows (Ideally there'd be a global setting with a per-shortcut override.  I'd probably have the default be to show the title bar, since it's safer)
+X Launching something like Cool Edit stuffs the splash screen into the PZ, not the actual main window
+X Wait for all windows spawned by a process
+X Switching tabs via hotkey doesn't bring the embedded window to the foreground
+X Hotkeys can be Ctrl+Ctrl and Ctrl+A+Shift and such
+X Clone should put the copy in the same folder as the source
+X Close tab icon is offset improperly with respect to where you have to click to trigger it
+X Ctrl+PgUp when a tab is actually focuses switches twice (once for hotkey and once for some reason)
+X Undoing a delete removes the program from whatever folder it was in
+X Removing title bar from Putty doesn't work on the second and subsequent windows (SelectedIndexChanged was calling SW_RESTORE)
+X "open all subprograms" context menu on folders
+X Closing a tab with a notepad that requires answering yes/no/cancel can leave that dialog unreachable
+X Need templates for: mstsc
+X Opening two of the same program and clicking the close box on the leftmost one somehow closes the rightmost one (needed tag.Clone())
+X having the hotkeys enabled is making window-caption searches for MSTSC timeout (user DoEvents in the caption-searching loop)
+X Need option for confirming before opening multiple programs at once
+X Resizing the window prompts scroll bars to appear, but moving windows outside the tab page area does not (more hooks?)
+X Pull existing window into PZ
+X Need hotkeys for:  Show program list
+X "Keep titlebar, keep maximized" doesn't keep maximized if you move the window around
+X Resizing the window to larger-than-the-terminal-services-window makes the TS window move out of the panel
+X Panel size/scroll bar positions should be based on the position of the internal windows, not just the desktop size
+X PreventMove() doesn't do anything yet
+X Why is RunProgramFromNode calling timerNewChild.Start() ?
+X Could use a better way of filtering out unimportant WH_* messages in the DLL before sending them to PZ (especially "window moved")
+X Closing a window needs to re-check the scroll bars
+X Closing the inner window leaves the empty tab around (added option)
+X Remember window positions inside tabpage
+X Closing the GIMP tab isn't terminating the process
+X How do you move between tabs? (in firefox, I use Ctrl+PgUp/PgDn to do that)
+X probably you'll want a "Clone Entry" context-menu item
+X it would definitely be handy to have it capture the second window that pops up
+X and a folder structure
+X and a drag tab off pz to "release" it
+X hm. well, pz could use an option to allow single-clicking on an entry selecting the associated tab
+X auto-hide "sidebar"
+X and right-click on tab needs "re-run session"
+X and a red-X on each tab would be handy
+X when you close a putty you seem to lose the ability to use ctrl+pgdn
+X you'll probably want some form of templating mechanism that can be defined for known types, like Putty or RDP or whatnot
+X Use WH_SHELL/WH_CBT to catch new windows from PZ'd process
+X Moving GIMP windows outside the page bounds isn't triggering the scroll bars
+X CheckScrollbars is maximizing "are you sure?" windows as well as the main window
+X Unhiding a window (e.g. Subrip's misc. windows) does not trigger either the "capture" or "checkscrollbars" functions
+X "GIMP" option - arrange multiple windows in a panel; make sure resizing the panel doesn't do something dumb
+X Subrip window is marked as relevant but not parented properly
+X Opening the second window sizes it to a slightly smaller size than the first window if the title bar is not removed
+X "keep maximized" and "remove titlebar" broken [no such thing as "main window" any more]
+X "Ensure Visible" isn't working on open file dialog again
+X Child windows should not start positioned off the virtual "screen"
+X Selecting a PZ'd window does not bring the main application to the foreground (AllowSetForgroundWindow?)
+X Configurable delay waiting for main window / expected caption
+X Autohide only works when the tab is selected, not the program inside the tab (fix with WH_CBT focus hook?)
+X Switching tabs is not properly setting the PZ'd window as the active window
+X Hotkey should not be sent to the PZ window
+X "Launch all" could use an option to launch them all in the same tab
+X Switching tabs with hotkey makes main window blink instead of become active (because current process hasn't allowed PZ to set the foreground window?)
+X Closing a GIMP tab closes some of the tool windows first, which makes them not show up next time you start GIMP
+X Ctrl+Tab/Ctrl+Shift+Tab to switch between captured windows in a tab
+X Need a way to have default options (e.g. "don't minimize") for known programs like GIMP
+X Some sort of "full screen" option that hides the WindowHolder controls (tab page, menu bar, etc) [currently hotkey hides everything except tab page]
+X Switching to full screen mode sometimes moves the captured windows left and up (the distance of the tab page client rectangle location?)
+X Drag and drop to organize tab pages

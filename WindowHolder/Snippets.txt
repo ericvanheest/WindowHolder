@@ -1,0 +1,191 @@
+﻿using System;
+using System.Windows.Forms;
+using System.Drawing;
+
+namespace Yoramo.GuiLib
+{
+    public delegate bool PreRemoveTab(int indx);
+    public class TabControlEx : TabControl
+    {
+        public TabControlEx()
+            : base()
+        {
+            PreRemoveTabPage = null;
+            this.DrawMode = TabDrawMode.OwnerDrawFixed;
+        }
+
+        public PreRemoveTab PreRemoveTabPage;
+
+        protected override void OnDrawItem(DrawItemEventArgs e)
+        {
+            Rectangle r = e.Bounds;
+            r = GetTabRect(e.Index);
+            r.Offset(2, 2);
+            r.Width = 5;
+            r.Height = 5;
+            Brush b = new SolidBrush(Color.Black);
+            Pen p = new Pen(b);
+            e.Graphics.DrawLine(p, r.X, r.Y, r.X + r.Width, r.Y + r.Height);
+            e.Graphics.DrawLine(p, r.X + r.Width, r.Y, r.X, r.Y + r.Height);
+
+            string titel = this.TabPages[e.Index].Text;
+            Font f = this.Font;
+            e.Graphics.DrawString(titel, f, b, new PointF(r.X + 5, r.Y));
+        }
+        protected override void OnMouseClick(MouseEventArgs e)
+        {
+            Point p = e.Location;
+            for (int i = 0; i < TabCount; i++)
+            {
+                Rectangle r = GetTabRect(i);
+                r.Offset(2, 2);
+                r.Width = 5;
+                r.Height = 5;
+                if (r.Contains(p))
+                {
+                    CloseTab(i);
+                }
+            }
+        }
+
+        private void CloseTab(int i)
+        {
+            if (PreRemoveTabPage != null)
+            {
+                bool closeIt = PreRemoveTabPage(i);
+                if (!closeIt)
+                    return;
+            }
+            TabPages.Remove(TabPages[i]);
+        }
+    }
+}
+
+
+
+        private void tcMain_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            TabPage page = tcMain.TabPages[e.Index];
+            ProgramItemTag tag = (ProgramItemTag) page.Tag;
+            string strCaption = page.Text;
+            if (tag != null)
+                strCaption = tag.FriendlyName;
+
+            SizeF sz = e.Graphics.MeasureString(strCaption, e.Font);
+
+            page.
+            e.Graphics.DrawString(strCaption, e.Font, Brushes.Black, new PointF(3f, 3f));
+            //e.Graphics.FillRectangle(Brushes.Red, new Rectangle(0, 0, 20, 20));
+        }
+
+
+
+                Point ptOrig = panel.Location;
+
+                // There are three possible situations we want to deal with here:
+                // - rcBounds location is completely positive with respect to the TabPage and Panel.Location is zero (do nothing)
+                // - rcBounds location is completely positive with respect to the TabPage and Panel.Location is nonzero (move windows and reset panel location to origin)
+                // - rcBounds location is negative but still within the Panel (do nothing)
+                // - rcBounds location is negative and outside the Panel (move windows to be inside panel, move panel so that apparent window positions do not change)
+
+                if (rcBounds.Left < page.ClientRectangle.Left || rcBounds.Top < page.ClientRectangle.Top)
+                {
+                    if (panel.Location.X > rcBounds.Left || panel.Location.Y > rcBounds.Top)
+                    {
+                        ptOffset.X = panel.Left - rcBounds.Left;
+                        ptOffset.Y = panel.Top - rcBounds.Top;
+                        if (ptOffset.X < 0)
+                            ptOffset.X = 0;
+                        if (ptOffset.Y < 0)
+                            ptOffset.Y = 0;
+                        Point ptNewLocation = rcBounds.Location;
+                        if (ptNewLocation.X > 0)
+                            ptNewLocation.X = 0;
+                        if (ptNewLocation.Y > 0)
+                            ptNewLocation.Y = 0;
+                        panel.Location = ptNewLocation;
+                    }
+                }
+                else if (ptOrig != Point.Empty)
+                {
+                    ptOffset = ptOrig;
+                    foreach (IntPtr ptr in windows)
+                    {
+                        Rectangle rc = panel.RectangleToClient(User32.GetWindowRectangle(ptr));
+                        rc.Offset(ptOrig.X, ptOrig.Y);
+                        User32.SetWindowPos(ptr, IntPtr.Zero, rc.X, rc.Y, 0, 0, SetWindowPosFlags.IgnoreResize | SetWindowPosFlags.IgnoreZOrder);
+                    }
+                    panel.Location = Point.Empty;
+                }
+
+                rcBounds.Offset(ptOffset);
+                Size szPanel = new Size(page.ClientRectangle.Width - panel.Location.X, page.ClientRectangle.Height - panel.Location.Y);
+                szPanel.Width += Math.Max(0, rcBounds.Right - page.ClientRectangle.Right);
+                szPanel.Height += Math.Max(0, rcBounds.Bottom - page.ClientRectangle.Bottom);
+                panel.Size = szPanel;
+
+                if (!page.HorizontalScroll.Visible)
+                    if (szPanel.Width + panel.Location.X > page.ClientRectangle.Width)
+                        if (rcBounds.Bottom < (panel.Height - SystemInformation.HorizontalScrollBarHeight))
+                            panel.Height -= SystemInformation.HorizontalScrollBarHeight;
+
+                if (!page.VerticalScroll.Visible)
+                    if (szPanel.Height + panel.Location.Y > page.ClientRectangle.Height)
+                        if (rcBounds.Right < (panel.Width - SystemInformation.VerticalScrollBarWidth))
+                            panel.Width -= SystemInformation.VerticalScrollBarWidth;
+
+
+            SCROLLINFO si = new SCROLLINFO();
+            si.cbSize = Marshal.SizeOf(si);
+            si.fMask = (int) ScrollInfoMask.SIF_POS;
+            IntPtr ptrScroll = (direction == ScrollBarDirection.SB_HORZ ? ctrl.HorizontalScroll : ctrl.VerticalScroll);
+            User32.GetScrollInfo(ctrl.Handle, (int) direction, ref si);
+            si.nPos = iPos;
+            User32.SetScrollInfo(ctrl.Handle, (int) direction, ref si, true);
+
+
+    switch(WaitForSingleObject(g_hSemaphore, 10))
+    {
+        case WAIT_OBJECT_0:
+//            {FILE *f = fopen("C:\\out.txt", "a+"); fprintf(f, "\ng_piMap[0] (count): %d\n", g_piMap[0]); fclose(f); }
+            for(int i = 0; i < g_piMap[0]; i++)
+            {
+                LPCAPTUREDWINDOWINFO pCWIStart = (LPCAPTUREDWINDOWINFO) (g_piMap + pCPIStart[i].WindowListOffset + 1);
+//                {FILE *f = fopen("C:\\out.txt", "a+"); fprintf(f, "pCPIStart[%d].PID: %d, pCPIStart[%d].ParentHandle: %8.8x, pCPIStart[%d].Offset: %d\n", i, pCPIStart[i].PID, i, pCPIStart[i].ParentHandle, i, pCPIStart[i].WindowListOffset ); fclose(f); }
+                int iWindowCount = *(g_piMap + pCPIStart[i].WindowListOffset);
+//                {FILE *f = fopen("C:\\out.txt", "a+"); fprintf(f, "iWindowCount: %d\n", iWindowCount ); fclose(f); }
+                for(int j = 0; j < iWindowCount; j++)
+                {
+//                    {FILE *f = fopen("C:\\out.txt", "a+"); fprintf(f, "pCWIStart[%d].Handle: %8.8x, pCWIStart[%d].Flags: %8.8x\n", j, pCWIStart[j].Handle, j, pCWIStart[j].Flags); fclose(f); }
+                    if (pCWIStart[j].Handle == (unsigned int) hwnd)
+                    {
+                        lpCWI->Handle = (unsigned int) hwnd;
+                        lpCWI->ParentHandle = (unsigned int) pCPIStart[i].ParentHandle;
+                        lpCWI->Flags = pCWIStart[j].Flags;
+//                        {FILE *f = fopen("C:\\out.txt", "a"); fprintf(f, "Found CWI[%d]: %8.8x, %8.8x, %8.8x\n", i, lpCWI->Handle, lpCWI->ParentHandle, lpCWI->Flags ); fclose(f); }
+                        ReleaseSemaphore(g_hSemaphore, 1, NULL);
+                        return true;
+                    }
+                }
+            }
+            ReleaseSemaphore(g_hSemaphore, 1, NULL);
+            return false;
+        default:
+            //{FILE *f = fopen("C:\\out.txt", "a"); fprintf(f, "Semaphore timeout\n"); fclose(f); }
+            return bErrorReturn;
+    }
+
+
+
+                    Process.
+                    int pidConvert.ToInt32(str, 16));
+                    if (hwnd != IntPtr.Zero && User32.IsWindow(hwnd))
+                    {
+                        User32.SetParent(hwnd, IntPtr.Zero);
+                        if (Utility.GetAttribute(e, "style", ref str))
+                            User32.SetWindowLongPtr32(hwnd, User32.GWL_STYLE, new IntPtr(Convert.ToInt32(str, 16)));
+                        if (Utility.GetAttribute(e, "exstyle", ref str))
+                            User32.SetWindowLongPtr32(hwnd, User32.GWL_EXSTYLE, new IntPtr(Convert.ToInt32(str, 16)));
+                    }
+
+

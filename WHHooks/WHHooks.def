@@ -1,0 +1,10 @@
+LIBRARY WHHooks
+
+EXPORTS
+	InitializeShellHook
+	UninitializeShellHook
+	EPInitializeShellHook
+	EPUninitializeShellHook
+
+SECTIONS
+.SHRDATA READ WRITE SHARED
